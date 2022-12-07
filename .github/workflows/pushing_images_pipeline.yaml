@@ -35,10 +35,8 @@ jobs:
           cache: 'maven'
 
       - name: Install modules on main pom.xml
-        run: ls
-      - run: cd soluction/
-      - run: ls
-      - run: mvn clean install -DskipTests
+        working-directory: ./soluction
+        run: mvn clean install -DskipTests
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -52,8 +50,8 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Install modules on main pom
-        run: cd applications/app-command/
-      - run: mvn clean package -DskipTests
+        working-directory: ./soluction/applications/app-command
+        run: mvn clean package -DskipTests
 
       - name: Build, tag, and push santiago command to Amazon ECR
         env:
