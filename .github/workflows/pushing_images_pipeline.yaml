@@ -54,6 +54,7 @@ jobs:
         run: mvn clean package -DskipTests
 
       - name: Build, tag, and push santiago command to Amazon ECR
+        working-directory: ./soluction/applications/app-command
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: santiago-command
