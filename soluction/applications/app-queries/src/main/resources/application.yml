@@ -1,0 +1,23 @@
+server:
+  port: 8081
+  origin: ${ORIGIN:*}
+spring:
+  main:
+    banner-mode: off
+  output:
+    ansi:
+      enabled: ALWAYS
+  application:
+    name: game-queries
+  sleuth:
+    sampler:
+      percentage: 1.0
+  zipkin: # All zipkin features disabled for integration tests
+    enabled: false
+microservice:
+  exchange: ${EXCHANGE:core-game}
+  queue: ${QUEUE:game.queryhandles}
+  routingKey: ${ROUTING_KEY:cardgame.#}
+  uriBus: ${RABBITMQ_URI:amqp://guest:guest@localhost:5672}
+  uriDb: ${MONGO_URI:mongodb://localhost:27017/game-events}
+

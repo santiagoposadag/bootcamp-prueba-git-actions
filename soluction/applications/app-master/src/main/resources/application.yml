@@ -1,0 +1,19 @@
+server:
+  port: 8085
+  origin: ${ORIGIN:*}
+spring:
+  main:
+    banner-mode: off
+  output:
+    ansi:
+      enabled: ALWAYS
+  application:
+    name: master
+  sleuth:
+    sampler:
+      percentage: 1.0
+  zipkin: # All zipkin features disabled for integration tests
+    enabled: false
+
+microservice:
+  uriDb: ${MONGO_URI:mongodb://userCore:MongoDBPassword@localhost:27017/cardgame}
