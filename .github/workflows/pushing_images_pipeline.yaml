@@ -35,7 +35,9 @@ jobs:
           cache: 'maven'
 
       - name: Install modules on main pom.xml
-        run: cd soluction/
+        run: ls
+      - run: cd soluction/
+      - run: ls
       - run: mvn clean install -DskipTests
 
       - name: Configure AWS Credentials
