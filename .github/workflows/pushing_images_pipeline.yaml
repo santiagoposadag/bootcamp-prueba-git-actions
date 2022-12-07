@@ -49,7 +49,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Install modules on main pom
+      - name: create the jar for app-command
         working-directory: ./soluction/applications/app-command
         run: mvn clean package -DskipTests
 
@@ -58,6 +58,62 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: santiago-command
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: create jar for app-queries
+        working-directory: ./soluction/applications/app-queries
+        run: mvn clean package -DskipTests
+
+      - name: Build, tag, and push santiago queries to Amazon ECR
+        working-directory: ./soluction/applications/app-queries
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: santiago-queries
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: create jar for app-proxy
+        working-directory: ./soluction/applications/app-proxy
+        run: mvn clean package -DskipTests
+
+      - name: Build, tag, and push santiago proxy to Amazon ECR
+        working-directory: ./soluction/applications/app-proxy
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: santiago-proxy
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: create jar for app-master
+        working-directory: ./soluction/applications/app-master
+        run: mvn clean package -DskipTests
+
+      - name: Build, tag, and push santiago master to Amazon ECR
+        working-directory: ./soluction/applications/app-master
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: santiago-master
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: create jar for app-gateway
+        working-directory: ./soluction/applications/app-gateway
+        run: mvn clean package -DskipTests
+
+      - name: Build, tag, and push santiago gateway to Amazon ECR
+        working-directory: ./soluction/applications/app-gateway
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: santiago-gateway
           IMAGE_TAG: latest
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
