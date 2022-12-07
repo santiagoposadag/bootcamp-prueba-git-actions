@@ -1,0 +1,63 @@
+#set up de java
+#checkout del proyecto
+#cd soluction
+#mvn install -DskipTests
+#cd applications/app-command/
+#mvn clean package -DskipTests
+#cd applications/app-gateway/
+#mvn clean package -DskipTests
+#cd applications/app-queries/
+#mvn clean package -DskipTests
+#cd applications/app-proxy/
+#mvn clean package -DskipTests
+#cd applications/app-master/
+#mvn clean package -DskipTests
+
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: set up java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '11'
+          cache: 'maven'
+
+      - name: Install modules on main pom.xml
+        run: cd soluction/
+      - run: mvn clean install -DskipTests
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Install modules on main pom
+        run: cd applications/app-command/
+      - run: mvn clean package -DskipTests
+
+      - name: Build, tag, and push santiago command to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: santiago-command
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
